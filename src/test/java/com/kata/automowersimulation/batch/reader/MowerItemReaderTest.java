@@ -37,24 +37,24 @@ class MowerItemReaderTest {
         when(resource.getInputStream()).thenReturn(is);
 
         mowerItemReader = new MowerItemReader(resource);
-        mowerItemReader.open(new ExecutionContext()); // Manually open the reader to initialize streams
+        mowerItemReader.open(new ExecutionContext());
     }
 
     @Test
     void shouldReadFirstMowerCorrectly() throws Exception {
-        Mower firstMower = mowerItemReader.read(); // This should now correctly read the first mower setup.
+        Mower firstMower = mowerItemReader.read();
         assertNotNull(firstMower, "First mower should not be null");
         assertEquals(1, firstMower.getPosition().getX(), "Expected X position does not match for the first mower");
         assertEquals(2, firstMower.getPosition().getY(), "Expected Y position does not match for the first mower");
         assertEquals(Orientation.N, firstMower.getPosition().getOrientation(), "Expected orientation does not match for the first mower");
 
-        Mower secondMower = mowerItemReader.read(); // Read the second mower
+        Mower secondMower = mowerItemReader.read();
         assertNotNull(secondMower, "Second mower should not be null");
         assertEquals(3, secondMower.getPosition().getX(), "Expected X position does not match for the second mower");
         assertEquals(3, secondMower.getPosition().getY(), "Expected Y position does not match for the second mower");
         assertEquals(Orientation.E, secondMower.getPosition().getOrientation(), "Expected orientation does not match for the second mower");
 
-        mowerItemReader.close(); // Close the reader
+        mowerItemReader.close();
     }
 
 }
