@@ -31,27 +31,11 @@ public class MowerItemReader implements ItemReader<Mower>, ItemStream {
     }
 
     @Override
-    public Mower read() throws Exception {
-        if (reader == null) {
-            open(new ExecutionContext());
-        }
-
-        if (lawn == null) {
-            String line = reader.readLine();
-            lineNumber++;
-            if (line != null) {
-                String[] lawnDimensions = line.split(" ");
-                int width = Integer.parseInt(lawnDimensions[0]);
-                int height = Integer.parseInt(lawnDimensions[1]);
-                lawn = new Lawn(width, height);
-            }
-        }
-
+    public Mower read() throws Exception, UnexpectedInputException {
         String mowerLine = reader.readLine();
         if (mowerLine == null) {
-            return null; // EOF
+            return null;
         }
-        lineNumber++;
 
         String[] mowerDetails = mowerLine.split(" ");
         int x = Integer.parseInt(mowerDetails[0]);
@@ -60,9 +44,8 @@ public class MowerItemReader implements ItemReader<Mower>, ItemStream {
 
         String instructionsLine = reader.readLine();
         if (instructionsLine == null) {
-            throw new UnexpectedInputException("Instructions expected for mower at line " + lineNumber);
+            throw new UnexpectedInputException("Instructions expected for mower at line");
         }
-        lineNumber++;
 
         Position position = new Position(x, y, orientation);
         return new Mower(position, lawn, instructionsLine);
@@ -76,16 +59,29 @@ public class MowerItemReader implements ItemReader<Mower>, ItemStream {
     @Override
     public void open(ExecutionContext executionContext) throws ItemStreamException {
         try {
+            reader = new BufferedReader(new InputStreamReader(inputFile.getInputStream()));
             if (executionContext.containsKey("lineNumber")) {
                 this.lineNumber = executionContext.getInt("lineNumber");
-            }
-            initializeReader();
-            // Skip lines until you reach the last read line
-            for (int i = 0; i < lineNumber; i++) {
-                reader.readLine();
+                for (int i = 0; i < lineNumber; i++) {
+                    reader.readLine();
+                }
+            } else {
+                initializeLawn();
             }
         } catch (IOException e) {
             throw new ItemStreamException("Failed to initialize reader", e);
+        }
+    }
+
+    private void initializeLawn() throws IOException {
+        String line = reader.readLine();
+        if (line != null) {
+            String[] lawnDimensions = line.split(" ");
+            int width = Integer.parseInt(lawnDimensions[0]);
+            int height = Integer.parseInt(lawnDimensions[1]);
+            lawn = new Lawn(width, height);
+        } else {
+            throw new UnexpectedInputException("Lawn dimensions are expected at the first line.");
         }
     }
 
