@@ -31,7 +31,7 @@ public class MowerItemReader implements ItemReader<Mower>, ItemStream {
     }
 
     @Override
-    public Mower read() throws Exception, UnexpectedInputException {
+    public Mower read() throws Exception {
         String mowerLine = reader.readLine();
         if (mowerLine == null) {
             return null;
@@ -49,11 +49,6 @@ public class MowerItemReader implements ItemReader<Mower>, ItemStream {
 
         Position position = new Position(x, y, orientation);
         return new Mower(position, lawn, instructionsLine);
-    }
-
-
-    private void initializeReader() throws IOException {
-        reader = new BufferedReader(new InputStreamReader(inputFile.getInputStream()));
     }
 
     @Override
